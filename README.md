@@ -95,7 +95,178 @@ Backbone models come with a built-in JSON encoder for their attributes, so to ac
 song_model.toJSON(); // {artist: "Death  Cab for Cutie", title: "Codes & Keys"}
 ```
 
+The opposite of ```.get()``` is ```.set()```:
 
+```javascript
+song_model.set({artist: "Ben Gibbard"});
+```
+
+It's better to use ```.set()``` than editing the model's attributes directly so that Backbone can properly broadcast the change to any views or collections that need it.
+
+You can set default values for a model in two ways:
+
+```javascript
+var Song = Backbone.Model.extend({
+  defaults: {
+    title: "Codes & Keys",
+    artist: "Death Cab for Cutie"
+  }
+});
+
+// will do the same thing as:
+
+var Song = Backbone.Model.extend({
+  initialize: function() {
+    this.set({
+      title: "Codes & Keys",
+      artist: "Death Cab for Cutie"
+    })
+  }
+})
+```
+
+Listening for changes to any or all attributes is easy:
+
+```javascript
+var Song = Backbone.Model.extend({
+  initialize: function() {
+    this.on("change", function() {
+      // call methods when any attribute changes
+    });
+    
+    this.on("change:artist", function() {
+      // call methods when the artist attribute changes
+    });
+  }
+})
+```
+
+##Backbone View
+
+In Backbone, a view is an object that manages the presentation of a model. It is not simply the HTML the gets rendered to the DOM, which is what the term "view" implies in a normal web stack. 
+Instead, a Backbone view stores a reference to an HTML template, and is responsible for adding that HTML to the DOM, as well as capturing events within those elements. You define a Backbone view
+by extending Backbone's own View object:
+
+```javascript
+var songView = Backbone.View.extend({
+  render: function() {
+    var template = _.template($('#song_template').html()),
+        markup = template(this.model.toJSON());
+    
+    this.$el.html(markup).appendTo('#songs');
+  }
+});
+
+var song = new Song({artist: "Death Cab for Cutie", song: "Codes & Keys"});
+song.view = new songView({model: song});
+song.view.render();
+```
+
+Let's take moment to discuss templating. There are several options for creating and rendering templates with JavaScript, but the one you get out of the box with Underscore is.. Underscore templating. 
+A template is simply an HTML fragment that accepts a JavaScript object to fill in its missing data pieces. A sample Underscore template might look like this in your DOM:
+
+```html
+<script type="html/template" id="song_template">
+  <li class="song">
+    Title: <%= title %>
+    Artist: <%= artist %>
+  </li>
+</script>
+```
+
+To turn this into real HTML you can use, first compile the template with the _.template() underscore method:
+
+```javascript
+var template = _.template($('#song_template').html());
+```
+
+Now fill in the missing pieces with your data:
+
+```javascript
+var song_object = {
+  title: "Codes & Keys",
+  artist: "Death Cab for Cutie"
+}
+var markup = template(song_object);
+``` 
+
+Now that markup variable has your filled-in HTML. The beauty of templating is that it removes the cumbersome step of building up markup with JavaScript. How many times have you written something like this:
+
+```javascript
+// warning: anti-pattern
+var li = "<li class='song'>";
+li += "Title: Codes & Keys";
+li += "Artist: Death Cab for Cutie";
+li += "</li>"
+```
+
+This is hard to maintain and it becomes impossible to construct complex HTML elements. Keeping your HTML separate from your JavaScript will allow each of those components to do its job better.
+
+Now that we have templates in place, let's go back to our Backbone view:
+
+```javascript
+var songView = Backbone.View.extend({
+  render: function() {
+    var template = _.template($('#song_template').html()),
+        markup = template(this.model.toJSON());
+    
+    this.$el.html(markup).appendTo('#songs');
+  }
+});
+
+var song = new Song({artist: "Death Cab for Cutie", song: "Codes & Keys"});
+song.view = new songView({model: song});
+song.view.render();
+```
+
+When we call ```song.view.render()```, we are creating an HTML fragment from our template and our model data, then appending it to the #songs div.
+
+A Backbone view has an associated HTML element at all times. We access and operate on this element by calling ```view.el```. If you add a dollar sign before ```el```, Backbone will return the element wrapped as a jQuery object. 
+This is useful if you plan on calling jQuery methods, like we do in ```this.$el.html(markup);```. In the example above, we didn't specify what ```el``` is, so by default it's an empty ```<div>```. 
+  
+You can override this default by telling the view some information about your desired element. You can tell it what class, ID, and element type to use:
+
+```javascript
+var songView = Backbone.View.extend({
+  tagName: 'li',
+  className: 'song',
+  render: function() {}
+});
+```
+When we call ```.$el``` on an instance of songView, it will return an <li> with a class of "song". 
+
+If we don't want to create a new element -- say we already have an element on the page we want to use for this view -- we would just declare that with a simple selector:
+     
+```javascript
+var songView = Backbone.View.extend({
+  el: '#song_container',
+  render: function() {}
+});
+```
+
+Let's next look at Backbone view events. Events is an attribute of a Backbone view that uses jQuery's .delegate() to respond to user interactions within our view.
+
+```javascript
+var songView = Backbone.View.extend({
+  events: {
+    'click li': 'playSong',
+    'submit #myForm': 'handleSubmit'
+  },
+  render: function() {},
+  playSong: function(e) {
+    // handle the click event on an <li> inside our view
+  },
+  handleSubmit: function(e) {
+    // handle the form submit event in an element with an ID of "myForm"
+  }
+});
+```
+
+You declare the event type and the selector where you're listening for that event with a string. ```click li``` means I'm listening for a click event in any of this view's <li>s. After the colon comes the name of the method
+  that will run when this event happens. You define and fill out that method anywhere in this view file. 
+  
+  
+##Backbone Collections
 
 ##Backbone Router
 
