@@ -233,7 +233,7 @@ var songView = Backbone.View.extend({
   render: function() {}
 });
 ```
-When we call ```.$el``` on an instance of songView, it will return an <li> with a class of "song". 
+When we call ```.$el``` on an instance of songView, it will return an ```<li>``` with a class of "song". 
 
 If we don't want to create a new element -- say we already have an element on the page we want to use for this view -- we would just declare that with a simple selector:
      
@@ -262,11 +262,48 @@ var songView = Backbone.View.extend({
 });
 ```
 
-You declare the event type and the selector where you're listening for that event with a string. ```click li``` means I'm listening for a click event in any of this view's <li>s. After the colon comes the name of the method
+You declare the event type and the selector where you're listening for that event with a string. ```click li``` means I'm listening for a click event in any of this view's ```<li>```s. After the colon comes the name of the method
   that will run when this event happens. You define and fill out that method anywhere in this view file. 
   
   
 ##Backbone Collections
+
+Collections are objects that group many models together. If a user has a library of songs, Library might be the collection that contains many Song models. Like any other Backbone class, you create collections
+by extending the Backbone defaults:
+
+```javascript
+var Library = Backbone.Collection.extend({
+  model: Song
+});
+```
+By specifying that the collection's model is Song (which we defined earlier), the collection will automatically create Song models when pass data into the collection:
+
+```javascript
+var song_collection = new Library([
+  {
+    artist: "Death Cab for Cutie",
+    title: "Codes & Keys"
+  },
+  {
+    artist: "Noisettes",
+    title: "Atticus"
+  }
+]);
+
+song_collection.models.length; // 2
+song_collection.models[0].get('artist'); // "Death Cab for Cutie"
+```
+
+You've just seen the first way to add models to a collection: you pass in an array of objects at initialization. The second way is to call .add() on the collection:
+
+```javascript
+song_collection.add({
+  artist: "Noisettes",
+  title: "Cheap Kicks"
+});
+```
+
+Note that we're passing in an object literal. There is no need to first wrap that data in a Song model; since we specified in our collection that its model is Song, it will do the work of creating those models from our raw data.
 
 ##Backbone Router
 
