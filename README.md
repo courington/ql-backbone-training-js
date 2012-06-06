@@ -309,3 +309,27 @@ Note that we're passing in an object literal. There is no need to first wrap tha
 
 Backbone doesn't supply a traditional controller, but instead delegates that responsibility to the View and the Backbone Router. The Router is responsible for deciding what functions need to be called based on the URL.
 If a user visits, /songs/32, for example, the router might run a method that creates that song model, its view, and fires off the render() call.
+
+```javascript
+var SongsRouter = Backbone.Router.extend({
+  routes: {
+    "songs/:id": "showSong"
+  },
+  
+  showSong: function(id) {
+    // pretend songs_collection is an existing collection of Song models
+    var song = songs_collection.get(id);
+    song.render();
+  }
+})
+```
+Your JS app now has separate pages that are "linkable, bookmarkable, and shareable," as the docs explain. 
+
+It's a good idea to attach your router to your main app namespace. This makes it easy to manually navigate to a page from within your code:
+
+```javascript
+  app.router = new SongsRouter();
+  app.router.navigate('/song/42', {trigger: true});
+  // calling without trigger will simply write an entry to the browser's history
+  // calling with trigger actually forces that router action to happen
+```
