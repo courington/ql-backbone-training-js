@@ -141,6 +141,23 @@ var Song = Backbone.Model.extend({
 })
 ```
 
+Sync:
+
+You save model changes to the server by calling .save() on a model instance. This is a very important topic, and it's big enough that Nico will cover it separately later. For now, know that 
+there are three methods for syncing data with the server. They all depend on the model's URL attribute being set so it knows where to make the request. Nico will cover the URL
+attribute when talking about sync. 
+
+```javascript
+var song_model = new Song({
+  artist: "Death Cab for Cutie",
+  title: "Codes & Keys"
+});
+
+song_model.save(); // Push this data to the server
+song_model.fetch(); // Overwrite this instance with newer data from the server
+song_model.destroy(); // Destroy the model on the server (sends a DELETE request)
+```
+
 ##Backbone View
 
 In Backbone, a view is an object that manages the presentation of a model. It is not simply the HTML the gets rendered to the DOM, which is what the term "view" implies in a normal web stack. 
