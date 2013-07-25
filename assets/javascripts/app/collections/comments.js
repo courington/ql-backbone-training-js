@@ -1,5 +1,5 @@
 comments.BB.collections.comments = Backbone.Collection.extend({
-	url: "http://ql-backbone-training-api.herokuapp.com/comments?api_key=davidaragon",
+	url: "NO_URL_SET",
 	model: comments.BB.models.comment,
 	renderComments: function() {
 		$('#comments').empty();

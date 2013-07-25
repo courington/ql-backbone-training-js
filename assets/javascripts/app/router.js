@@ -9,10 +9,14 @@ comments.BB.router = Backbone.Router.extend({
 		var comment_form_view = new comments.BB.views.comment_form();
 			comment_form_view.render();
 			comment_form_view.$el.appendTo('body');
-
-		comments_collection.fetch().done(function() {
+      
+      comments_collection.reset([
+        {author: 'Alex', comment: 'Yo'},
+        {author: 'Alex', comment: 'Dear Sir, I am a Nigerian Prince...'},
+        {author: 'David', comment: 'One weird trick to...'},
+        {author: 'David', comment: 'Cats!'}
+      ]);
 			comments_collection.renderComments();
-		});
 
 	}
 });
