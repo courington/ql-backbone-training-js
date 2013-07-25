@@ -7,5 +7,13 @@ comments.BB.collections.comments = Backbone.Collection.extend({
 			comment.view.render();
 			comment.view.$el.appendTo('#comments');
 		});
+	},
+
+	initialize: function() {
+		var _this = this;
+		this.on('add', function() {
+			_this.renderComments();
+		});
 	}
+
 });
